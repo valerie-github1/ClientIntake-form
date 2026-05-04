@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISA Coursework Guides</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 600px;
+            padding: 40px;
+            text-align: center;
+        }
+        h1 {
+            color: #1F3864;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        .guides {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .guide-card {
+            background: #f8f9fa;
+            border: 2px solid #2E75B6;
+            border-radius: 8px;
+            padding: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .guide-card:hover {
+            background: #e3f2fd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 117, 182, 0.2);
+        }
+        .guide-card h2 {
+            color: #2E75B6;
+            margin-bottom: 8px;
+            font-size: 1.3rem;
+        }
+        .guide-card p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+        .guide-card .btn {
+            display: inline-block;
+            background: #2E75B6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .guide-card:hover .btn {
+            background: #1F3864;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #999;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Visual Analytics Coursework</h1>
+        <p class="subtitle">Guides for the Identity Project</p>
+        
+        <div class="guides">
+            <a href="Census_Data_Sourcing_Explainer.html" class="guide-card">
+                <h2>📊 Data Sourcing Guide</h2>
+                <p>Step-by-step instructions for downloading 2011 and 2021 census data from ONS and Nomisweb</p>
+                <span class="btn">Open Guide →</span>
+            </a>
+            
+            <a href="playbook.html" class="guide-card">
+                <h2>🎯 Identity Project Playbook</h2>
+                <p>Complete playbook with timeline, deliverables, and key checkpoints for the coursework</p>
+                <span class="btn">Open Playbook →</span>
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>Last updated: May 2026 | Deadline: May 5, 2026 13:00 BST</p>
+        </div>
+    </div>
+</body>
+</html>
