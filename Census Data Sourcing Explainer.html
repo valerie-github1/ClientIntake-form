@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How the Census Data Was Found & Downloaded</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #1a202c; }
+
+  header {
+    background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
+    color: white; padding: 32px 40px;
+  }
+  header h1 { font-size: 1.7rem; font-weight: 700; margin-bottom: 6px; }
+  header p { opacity: 0.85; font-size: 0.95rem; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+  .step {
+    background: white; border-radius: 12px; padding: 28px 32px;
+    margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    border-left: 5px solid #2E75B6;
+  }
+  .step.green  { border-left-color: #27ae60; }
+  .step.orange { border-left-color: #e67e22; }
+  .step.purple { border-left-color: #8e44ad; }
+
+  .step-num {
+    display: inline-block; background: #2E75B6; color: white;
+    border-radius: 50%; width: 32px; height: 32px; text-align: center;
+    line-height: 32px; font-weight: 700; font-size: 0.9rem; margin-bottom: 12px;
+  }
+  .step.green  .step-num { background: #27ae60; }
+  .step.orange .step-num { background: #e67e22; }
+  .step.purple .step-num { background: #8e44ad; }
+
+  .step h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: #1F3864; }
+  .step p  { font-size: 0.92rem; line-height: 1.6; color: #444; margin-bottom: 10px; }
+
+  .url-box {
+    background: #1e293b; color: #7dd3fc; font-family: monospace;
+    font-size: 0.82rem; padding: 12px 16px; border-radius: 8px;
+    overflow-x: auto; margin: 10px 0; line-height: 1.5;
+  }
+  .url-box .highlight { color: #fbbf24; }
+  .url-box .green-text { color: #86efac; }
+  .url-box .pink-text  { color: #f9a8d4; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .tag {
+    background: #e8f4fd; color: #1F3864; border-radius: 20px;
+    padding: 4px 12px; font-size: 0.82rem; font-weight: 600;
+    border: 1px solid #c3daf5;
+  }
+  .tag.green  { background: #eafaf1; color: #1e8449; border-color: #a9dfbf; }
+  .tag.orange { background: #fef9e7; color: #b7770d; border-color: #f9e79f; }
+
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.88rem; }
+  th { background: #1F3864; color: white; padding: 10px 14px; text-align: left; font-weight: 600; }
+  td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  td.code { font-family: monospace; color: #2563eb; font-size: 0.82rem; }
+  td.done { color: #27ae60; font-weight: 600; }
+
+  .flow {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 0; margin: 16px 0;
+  }
+  .flow-box {
+    background: #f0f4f8; border: 2px solid #2E75B6; border-radius: 8px;
+    padding: 10px 16px; font-size: 0.82rem; font-weight: 600; color: #1F3864;
+    text-align: center; min-width: 120px;
+  }
+  .flow-arrow {
+    font-size: 1.4rem; color: #2E75B6; padding: 0 8px; font-weight: bold;
+  }
+  .note {
+    background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px;
+    padding: 12px 16px; font-size: 0.88rem; color: #78350f; margin: 12px 0;
+  }
+  .note strong { color: #92400e; }
+
+  .geo-table td:first-child { font-family: monospace; color: #7c3aed; font-weight: 600; }
+
+  h3.section { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px;
+    color: #888; margin-bottom: 8px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>How the Census Data Was Found & Downloaded</h1>
+  <p>A step-by-step breakdown of the data sourcing process for your Visual Analytics coursework</p>
+</header>
+
+<div class="container">
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-num">1</div>
+    <h2>Starting Point — The Nomisweb Census Portal</h2>
+    <p>
+      <strong>Nomisweb</strong> (<a href="https://www.nomisweb.co.uk" target="_blank">nomisweb.co.uk</a>) is the official UK government portal run by the Office for National Statistics (ONS). 
+      It hosts all UK census microdata. Each census table has a permanent URL in this format:
+    </p>
+    <div class="url-box">
+      https://www.nomisweb.co.uk/census/<span class="highlight">2011</span>/<span class="green-text">dc2201ew</span>
+    </div>
+    <p>Where <span style="font-family:monospace;color:#e67e22">dc2201ew</span> is the <strong>table code</strong> assigned by ONS — every table has a unique code. The ones used in this project:</p>
+    <div class="tag-row">
+      <span class="tag">DC2201EW — Ethnic × Religion</span>
+      <span class="tag">KS209EW — Religion</span>
+      <span class="tag">KS201EW — Ethnic Group</span>
+      <span class="tag">KS202EW — National Identity</span>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-num">2</div>
+    <h2>Finding the Download Button on Each Page</h2>
+    <p>
+      Each Nomisweb table page has a section called <strong>"Download the entire table for all areas"</strong>. 
+      This reveals a dropdown to select your geography level (e.g. Local Authority), 
+      and a Download CSV button. When clicked, the browser submits a <strong>HTTP GET request</strong> to the Nomisweb API.
+    </p>
+    <div class="flow">
+      <div class="flow-box">Go to table page</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Click "Download entire table"</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Select "Local Authority District"</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">API URL revealed</div>
+    </div>
+    <p>By inspecting the form action URL, the underlying Nomisweb REST API endpoint was found:</p>
+    <div class="url-box">
+      https://www.nomisweb.co.uk/api/v01/dataset/<span class="highlight">nm_659_1</span>.bulk.csv<br>
+      &nbsp;&nbsp;?time=<span class="green-text">latest</span><br>
+      &nbsp;&nbsp;&amp;measures=<span class="green-text">20100</span><br>
+      &nbsp;&nbsp;&amp;geography=<span class="pink-text">TYPE464</span>
+    </div>
+    <div class="note">
+      <strong>What each part means:</strong><br>
+      &nbsp;• <code>nm_659_1</code> = the internal Nomisweb dataset ID for DC2201EW<br>
+      &nbsp;• <code>measures=20100</code> = count (not percentage)<br>
+      &nbsp;• <code>geography=TYPE464</code> = Local Authority District level (see Step 3)
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step green">
+    <div class="step-num">3</div>
+    <h2>The Geography Code — What is TYPE464?</h2>
+    <p>
+      Nomisweb uses <strong>TYPE codes</strong> to specify which level of geography you want data at. 
+      Every geography level in England and Wales has a code. We used <strong>TYPE464</strong> which is the 
+      "Local Authority District / Unitary Authority (prior to April 2015)" level — giving one row per local authority area.
+    </p>
+    <table class="geo-table">
+      <tr><th>TYPE Code</th><th>Geography Level</th><th>Used?</th></tr>
+      <tr><td>TYPE499</td><td>Countries (England / Wales)</td><td>—</td></tr>
+      <tr><td>TYPE480</td><td>Regions (e.g. South East)</td><td>—</td></tr>
+      <tr><td>TYPE463</td><td>Local authorities: county / unitary</td><td>—</td></tr>
+      <tr><td class="code" style="color:#7c3aed;font-weight:700">TYPE464</td><td><strong>Local authorities: district / unitary ← THIS ONE</strong></td><td class="done">✅ Used</td></tr>
+      <tr><td>TYPE297</td><td>Middle Layer Super Output Areas (MSOA)</td><td>—</td></tr>
+      <tr><td>TYPE298</td><td>Lower Layer Super Output Areas (LSOA)</td><td>—</td></tr>
+      <tr><td>TYPE299</td><td>Output Areas (smallest unit)</td><td>—</td></tr>
+    </table>
+    <p>TYPE464 was chosen because it gives <strong>348 local authority areas</strong> — granular enough to see regional patterns, but not so small that it's unmanageable in Tableau.</p>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-num">4</div>
+    <h2>The Four 2011 Dataset IDs Found</h2>
+    <p>By navigating each table page and inspecting the download form, the internal Nomisweb dataset IDs were identified:</p>
+    <table>
+      <tr><th>Table Code</th><th>Table Name</th><th>Nomisweb ID</th><th>Full Download URL</th></tr>
+      <tr>
+        <td class="code">DC2201EW</td>
+        <td>Ethnic Group × Religion</td>
+        <td class="code">nm_659_1</td>
+        <td class="code" style="font-size:0.75rem">...nm_659_1.bulk.csv?time=latest&amp;measures=20100&amp;geography=TYPE464</td>
+      </tr>
+      <tr>
+        <td class="code">KS209EW</td>
+        <td>Religion</td>
+        <td class="code">nm_616_1</td>
+        <td class="code" style="font-size:0.75rem">...nm_616_1.bulk.csv?time=latest&amp;measures=20100&amp;rural_urban=total&amp;geography=TYPE464</td>
+      </tr>
+      <tr>
+        <td class="code">KS201EW</td>
+        <td>Ethnic Group</td>
+        <td class="code">nm_608_1</td>
+        <td class="code" style="font-size:0.75rem">...nm_608_1.bulk.csv?time=latest&amp;measures=20100&amp;rural_urban=total&amp;geography=TYPE464</td>
+      </tr>
+      <tr>
+        <td class="code">KS202EW</td>
+        <td>National Identity</td>
+        <td class="code">nm_609_1</td>
+        <td class="code" style="font-size:0.75rem">...nm_609_1.bulk.csv?time=latest&amp;measures=20100&amp;rural_urban=total&amp;geography=TYPE464</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step orange">
+    <div class="step-num">5</div>
+    <h2>2021 Data — A Different System (Bulk ZIP Downloads)</h2>
+    <p>
+      The 2021 census uses a <strong>different download system</strong>. Instead of the Nomisweb API, 
+      ONS provides pre-packaged <strong>ZIP files</strong> on the bulk downloads page:
+      <a href="https://www.nomisweb.co.uk/sources/census_2021_bulk" target="_blank">nomisweb.co.uk/sources/census_2021_bulk</a>
+    </p>
+    <p>Each ZIP contains CSVs for <em>every</em> geography level. The naming convention is:</p>
+    <div class="url-box">
+      census2021-<span class="highlight">ts021</span>-<span class="pink-text">ltla</span>.csv<br><br>
+      <span class="highlight">ts021</span> = table code &nbsp;|&nbsp; 
+      <span class="pink-text">ltla</span> = Lower Tier Local Authority (= LAD level)
+    </div>
+    <p>The ZIP file URLs follow a consistent pattern:</p>
+    <div class="url-box">
+      https://www.nomisweb.co.uk/output/census/2021/census2021-<span class="highlight">TSCODE</span>.zip
+    </div>
+    <table>
+      <tr><th>Table Code</th><th>Table Name</th><th>ZIP URL</th><th>File inside ZIP</th></tr>
+      <tr>
+        <td class="code">TS021</td>
+        <td>Ethnic Group</td>
+        <td class="code" style="font-size:0.78rem">census2021-ts021.zip</td>
+        <td class="code" style="font-size:0.78rem">census2021-ts021-<strong>ltla</strong>.csv</td>
+      </tr>
+      <tr>
+        <td class="code">TS030</td>
+        <td>Religion</td>
+        <td class="code" style="font-size:0.78rem">census2021-ts030.zip</td>
+        <td class="code" style="font-size:0.78rem">census2021-ts030-<strong>ltla</strong>.csv</td>
+      </tr>
+      <tr>
+        <td class="code">TS028</td>
+        <td>National Identity (detailed)</td>
+        <td class="code" style="font-size:0.78rem">census2021-ts028.zip</td>
+        <td class="code" style="font-size:0.78rem">census2021-ts028-<strong>ltla</strong>.csv</td>
+      </tr>
+      <tr>
+        <td class="code">TS031</td>
+        <td>Religion (detailed — bonus)</td>
+        <td class="code" style="font-size:0.78rem">census2021-ts031.zip</td>
+        <td class="code" style="font-size:0.78rem">census2021-ts031-<strong>ltla</strong>.csv</td>
+      </tr>
+    </table>
+    <div class="note">
+      <strong>Important correction during download:</strong> TS031 turned out to be "Religion (detailed)" not "National Identity". 
+      The correct national identity table is <strong>TS028</strong>. This was discovered by downloading and checking the column headers of the file.
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step purple">
+    <div class="step-num">6</div>
+    <h2>Geography Mismatch — 348 vs 331 Areas</h2>
+    <p>
+      You will notice the 2011 data has <strong>348 local authorities</strong> and 2021 has <strong>331</strong>. 
+      This is because local authority boundaries <em>changed</em> between censuses — some LAs were merged, 
+      split, or renamed. This is a known issue the ONS addresses directly.
+    </p>
+    <div class="tag-row">
+      <span class="tag">2011 Census → 348 Local Authority Districts</span>
+      <span class="tag orange">2021 Census → 331 Local Authority Districts</span>
+    </div>
+    <p><strong>How to handle this in your report:</strong> Use the ONS boundary change lookup to remap 2011 codes to 2021 boundaries. The ONS provides a lookup file for this:</p>
+    <div class="url-box">
+      https://www.ons.gov.uk/releases/censusmapsupdatechangeovertime
+    </div>
+    <p>In Python, you join the 2011 data to the boundary lookup table using the <strong>geography code</strong> column (e.g. <code>E06000005</code>), 
+    then aggregate any 2011 areas that were merged into a single 2021 area.</p>
+  </div>
+
+  <!-- STEP 7 — Final inventory -->
+  <div class="step green">
+    <div class="step-num">7</div>
+    <h2>Final Data Inventory — All 8 Files Downloaded</h2>
+    <table>
+      <tr><th>Year</th><th>File</th><th>Table</th><th>Areas</th><th>Columns</th><th>Size</th></tr>
+      <tr><td>2011</td><td class="code">dc2201ew_ethnic_by_religion.csv</td><td>DC2201EW</td><td>348</td><td>243</td><td>288K</td></tr>
+      <tr><td>2011</td><td class="code">ks209ew_religion.csv</td><td>KS209EW</td><td>348</td><td>15</td><td>36K</td></tr>
+      <tr><td>2011</td><td class="code">ks201ew_ethnic_group.csv</td><td>KS201EW</td><td>348</td><td>28</td><td>56K</td></tr>
+      <tr><td>2011</td><td class="code">ks202ew_national_identity.csv</td><td>KS202EW</td><td>348</td><td>47</td><td>88K</td></tr>
+      <tr><td>2021</td><td class="code">ts021_ethnic_group_2021.csv</td><td>TS021</td><td>331</td><td>49</td><td>52K</td></tr>
+      <tr><td>2021</td><td class="code">ts028_national_identity_2021.csv</td><td>TS028</td><td>331</td><td>94</td><td>124K</td></tr>
+      <tr><td>2021</td><td class="code">ts030_religion_2021.csv</td><td>TS030</td><td>331</td><td>13</td><td>28K</td></tr>
+      <tr><td>2021</td><td class="code">ts031_religion_detailed_2021.csv</td><td>TS031</td><td>331</td><td>63</td><td>68K</td></tr>
+    </table>
+    <p style="margin-top:12px;font-weight:600;color:#27ae60">All data sourced from official ONS/Nomisweb public datasets. No paywalls or registration required. Fully reproducible.</p>
+  </div>
+
+  <div style="text-align:center;color:#888;font-size:0.8rem;padding:16px 0 32px">
+    Data sources: Office for National Statistics (ONS) · Nomisweb UK Census Portal · Census 2011 & 2021
+  </div>
+
+</div>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="transform:translate(-${scrollX}px,-${scrollY}px);transform-origin:top left">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>
