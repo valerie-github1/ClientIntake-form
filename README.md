@@ -1,10 +1,7 @@
-# PhoennixAI Client Intelligence Intake
+# PhoennixAI Client Intake Form
 
-> **Client brief form for PhoennixAI onboarding.**
+> **Client form for PhoennixAI onboarding.**
 > Single-file HTML — no server, no dependencies, deploys anywhere in 60 seconds.
-
-**Live:** [phoennixai-client-intake.vercel.app](https://phoennixai-client-intake.vercel.app)
-
 ---
 
 ## What it does
